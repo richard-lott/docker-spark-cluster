@@ -1,16 +1,21 @@
 FROM openjdk:11.0.11-jre-slim-buster as builder
 
-# Add Dependencies for PySpark
+# Add install dependencies
 RUN apt-get update \
 && apt-get install -y curl vim wget software-properties-common ssh net-tools ca-certificates build-essential \
-    libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev \
-&& wget https://www.python.org/ftp/python/3.10.6/Python-3.10.6.tgz \
+    libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+
+# Download and compile Python 3.10
+RUN wget https://www.python.org/ftp/python/3.10.6/Python-3.10.6.tgz \
 && tar xzf Python-3.10.6.tgz \
 && cd Python-3.10.6 \
 && ./configure --enable-optimizations \
 && make altinstall \
 && update-alternatives --install "/usr/bin/python" "python" "/usr/local/bin/python3.10" 1 \
-&& apt-get install python3-numpy python3-matplotlib python3-scipy python3-pandas python3-simpy
+&& update-alternatives --install "/usr/bin/python3" "python3" "/usr/local/bin/python3.10" 1
+
+# PySpark dependencies
+RUN apt-get install -y python3-numpy python3-matplotlib python3-scipy python3-pandas python3-simpy
 
 # Fix the value of PYTHONHASHSEED
 # Note: this is needed when you use Python 3.3 or greater

@@ -1,14 +1,21 @@
 FROM openjdk:11.0.11-jre-slim-buster as builder
 
 # Add Dependencies for PySpark
-RUN apt-get update && apt-get install -y curl vim wget software-properties-common ssh net-tools ca-certificates python3 python3-pip python3-numpy python3-matplotlib python3-scipy python3-pandas python3-simpy
-
-RUN update-alternatives --install "/usr/bin/python" "python" "$(which python3)" 1
+RUN apt-get update \
+&& apt-get install -y curl vim wget software-properties-common ssh net-tools ca-certificates build-essential \
+    libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev \
+&& wget https://www.python.org/ftp/python/3.10.6/Python-3.10.6.tgz \
+&& tar xzf Python-3.10.6.tgz \
+&& cd Python-3.10.6 \
+&& ./configure --enable-optimizations \
+&& make altinstall \
+&& update-alternatives --install "/usr/bin/python" "python" "/usr/local/bin/python3.10" 1 \
+&& apt-get install python3-numpy python3-matplotlib python3-scipy python3-pandas python3-simpy
 
 # Fix the value of PYTHONHASHSEED
 # Note: this is needed when you use Python 3.3 or greater
-ENV SPARK_VERSION=3.0.2 \
-HADOOP_VERSION=3.2 \
+ENV SPARK_VERSION=3.4.0 \
+HADOOP_VERSION=3 \
 SPARK_HOME=/opt/spark \
 PYTHONHASHSEED=1
 

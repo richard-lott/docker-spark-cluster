@@ -11,6 +11,7 @@ services:
     environment:
       - SPARK_LOCAL_IP=spark-master
       - SPARK_WORKLOAD=master
+    restart: unless-stopped
   spark-worker-a:
     image: cluster-apache-spark:3.4.0
     ports:
@@ -29,6 +30,7 @@ services:
     volumes:
        - ./apps:/opt/spark-apps
        - ./data:/opt/spark-data
+    restart: unless-stopped
   spark-worker-b:
     image: cluster-apache-spark:3.4.0
     ports:
@@ -47,10 +49,12 @@ services:
     volumes:
         - ./apps:/opt/spark-apps
         - ./data:/opt/spark-data
+    restart: unless-stopped
   demo-database:
     image: postgres:11.7-alpine
     ports: 
       - "5432:5432"
     environment: 
       - POSTGRES_PASSWORD=casa1234
+    restart: unless-stopped
 
